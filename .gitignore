@@ -1,6 +1,9 @@
 # Ignore the entire LinkedIn data folder and everything inside it= csvs
 Rion_LinkedInDataExport_02-20-2026/
 
+# Environment variables
+.env.local
+
 # Ignore all JSON files 
 *.json
 

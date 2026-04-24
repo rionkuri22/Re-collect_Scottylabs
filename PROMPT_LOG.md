@@ -11,8 +11,27 @@ What are some tools and strategies I could use to automatically detect the perso
 
 How to update a json file without recreating a new file?
 
-# Use Antigravity agent to scrape data from other sites
+# Use Antigravity agent to scrape data from other site + my Linkedin exported data folder
+I have exported my own Linkedin account data and stored all csvs in a folder called Rion_LinkedInDataExport_02-20-2026/. Extract all relevant text from it and add that information at the bottom of rion_kurihara_resume.json. 
+
+Now go to the following 2 urls and extract text information.
+https://rionkuri22.github.io/
+https://www.youtube.com/channel/UCa3vbcjEPU0uZpjXmRS2UfA
+Add info at the bottom of rion_kurihara_resume.json. 
+
+Retry going to https://rionkuri22.github.io. You should also getting info like speaks, loves, thinking about and the number of cities that have travelled to.
 
 # Combine output into 1 json
+See rion_kurihara_resume.json. Right now the json is split into sections like resume then GitHub etc. and has data from each stuck under those speicif sections without having a joint projecvts section for example.
+Create jpoint sections split by content if/when applicable. Do not delete any information even if similasr or dupliocate information. Make sure each line/section lists its exact source eg) github, youtube. 
 
 # Vectorize
+I have a json file and a pinecome instance already ready to go. Use gemini-embedding-001 on it with my Gemini API key.
+
+# Test as LLM
+I just queried What is Rion's experience with deploying working projects? based on my json and am let down by the output
+Based on the current records, Rion Kurihara has experience building and working on projects such as the "Python CLI Quiz App," which was specifically designed to test a Two-Agent Workflow, and "rionkuri22.github.io."
+However, the provided records do not explicitly detail their experience or track record regarding the deployment of these projects. Therefore, I don't know the specifics of their deployment experience based on the current records.
+I wanted it to at least list my personal website as having been deployed because there is a url. It should have also noticed "shipped" and "in development" tags in the projects section of my personal website. Another hint would have been my resume where it says the user count after launch for CollegeCart which I am a founder for.
+
+# Implement frontend
