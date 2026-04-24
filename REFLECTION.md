@@ -1,5 +1,14 @@
-# Build UI (*used Stich)
+1. My process 
+Idea I had had from before. As soon as made up mind about commiting to building it for this assingment, created Google Form for collecting data with clear permission checkboxes and shared with friends. 
+Specificaly got: PDF resume, Linkedin URL 
 
-Design UI mockups for each possible page of my new product called Re:collect. While it is a typical AI wrapper product, make sure to not make it look like just another chat-based LLM like Gemini or ChatGPT. Take simple, minimalistic but stylish notes from Google or Apple. Re:collect is an AI-powered active intelligence layer that transforms static directories into dynamic discovery engines. By synthesizing fragmented data from LinkedIn, GitHub, and research repositories into a RAG-based chat interface, and providing recommendations paired with transparent logic, personalized outreach templates, and proactive recommendations, we enable people to move beyond "networking by fate". Some key features organized in rough userflow order: Log in with Terrier credentials Data importing Users give explicit consent  Upload resumes, Linkedin export data, social media account links etc.  Land on main page= chat page OPtion to open saved or pinned chats or start new one For each chat, has the ability to turn on proactive alerts eg) 3 days before the hackathon, one of the participants newly posted update to Linkedin about new ML internship -> gives new recommendation In a chat, type in question. Get detailed output from model in mostly text form but with interactive contact cards and easy to copy and paste 1liners.  Every output needs to include the following A list of best candidates in order of likelihood of match Explanation of the logic behind the candidate selection Copy-paste ready + personalized “warm intro” drafts to reach out to them  Clickable links that look like cute icons to their public data eg) Linkedin or portfolio, resume etc. When click on contact card should open popup or sidebar of their actual contact card (the same thing a user would see had they typed up their name in the directory) Other pages  A semantic search directory page Simple search bar and filters that pull up differentg contact cards Can take not only names but field of expertise “medicine”, job position eg) “software engineer” etc. but nothing too long An interactive map type visuals that shows how people are similar or connected Use case: What fields do participants (of a Hackathon) have most expertise A page that records and allows revisiting of details of proactive alerts
 
-# Prepare 
+2. AI tools and strategies I used 
+
+3. Changes from pre-113
+Did not know what RAG was. 
+Was too scared to download or use any agentic AI tools. 
+Feel so much more confident and like have more otpions of ways to bring my many ideas to life, even if partially, before handing to engineers instead of trying to explain with words and terrible drawings. 
+
+5. Had I had more time...
+Make the whole process more automated so that can realistically proecess thousands of accounts for hackathon next year probably by at least implementing NLP. Right now, need to name each json myself or after getting half of the output in Colab and then the other half from Antigravity agent, need to give to Gemini to combine them.
