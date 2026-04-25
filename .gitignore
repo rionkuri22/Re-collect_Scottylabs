@@ -9,3 +9,14 @@ Rion_LinkedInDataExport_02-20-2026/
 
 # Ignore Mac system files
 .DS_Store
+
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Temporary files
+tmp_app/
+.DS_Store
+*.log

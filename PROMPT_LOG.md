@@ -35,3 +35,11 @@ However, the provided records do not explicitly detail their experience or track
 I wanted it to at least list my personal website as having been deployed because there is a url. It should have also noticed "shipped" and "in development" tags in the projects section of my personal website. Another hint would have been my resume where it says the user count after launch for CollegeCart which I am a founder for.
 
 # Implement frontend
+Read SPEC.md in this project and create all necessary files to achieve the goal. After creating the files, run the site to verify it works without errors.
+
+Open http://localhost:3000 and Go through SPEC.md and check that each request is matched. Return a summary of any errors or visual discrepancies.
+Especially make sure the following:
+1. Landing page (Chat) loads correctly with new Scotty logo and user icon that renders correctly. It should have design that replicates /docs/mockups/chat_mockup.png.
+2. Go to search and check if Rion Kurihara's card is visible in the search page (as it is the only user json provided.
+
+# 
