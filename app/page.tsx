@@ -1,144 +1,188 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, User, Bot, Loader2 } from 'lucide-react';
-import ProfileCard from '@/components/ProfileCard';
-import { useChat } from '@/context/ChatContext';
+import React, { useState, useRef, useEffect } from "react";
+import ProfileCard from "@/components/ProfileCard";
+import { useChat } from "@/context/ChatContext";
 
-interface Message {
-  role: 'user' | 'bot';
-  content: string;
-  recommendedPeople?: any[];
+function SendIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+      <line x1="22" y1="2" x2="11" y2="13" stroke="white" strokeWidth="2" strokeLinecap="round" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" fill="white" />
+    </svg>
+  );
+}
+function StarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+function SpinnerIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" className="spin">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+    </svg>
+  );
+}
+
+/** Minimal markdown → React renderer. Handles **bold**, *italic*, bullet lists. */
+function MarkdownText({ text }: { text: string }) {
+  // Split into lines and process
+  const lines = text.split("\n");
+  const elements: React.ReactNode[] = [];
+  let listItems: React.ReactNode[] = [];
+
+  function flushList(key: string) {
+    if (listItems.length > 0) {
+      elements.push(<ul key={key} style={{ margin: "6px 0 6px 18px", listStyleType: "disc" }}>{listItems}</ul>);
+      listItems = [];
+    }
+  }
+
+  function renderInline(raw: string): React.ReactNode[] {
+    // Convert **bold** and *italic*
+    const parts: React.ReactNode[] = [];
+    const regex = /(\*\*(.+?)\*\*|\*(.+?)\*)/g;
+    let last = 0, m;
+    while ((m = regex.exec(raw)) !== null) {
+      if (m.index > last) parts.push(raw.slice(last, m.index));
+      if (m[2]) parts.push(<strong key={m.index}>{m[2]}</strong>);
+      else if (m[3]) parts.push(<em key={m.index}>{m[3]}</em>);
+      last = m.index + m[0].length;
+    }
+    if (last < raw.length) parts.push(raw.slice(last));
+    return parts;
+  }
+
+  lines.forEach((line, i) => {
+    const bullet = line.match(/^[*\-]\s+(.+)/);
+    if (bullet) {
+      listItems.push(<li key={i}>{renderInline(bullet[1])}</li>);
+    } else {
+      flushList(`list-${i}`);
+      if (line.trim() === "") {
+        elements.push(<br key={`br-${i}`} />);
+      } else {
+        elements.push(<p key={i} style={{ margin: "2px 0" }}>{renderInline(line)}</p>);
+      }
+    }
+  });
+  flushList("list-end");
+
+  return <div className="chat-msg-text">{elements}</div>;
 }
 
 export default function ChatPage() {
-  const { currentChatId, chats, pinned, addChat, updateChatMessages, setCurrentChatId } = useChat();
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { currentChatId, chats, pinned, addChat, updateChatMessages } = useChat();
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const currentChat = [...chats, ...pinned].find(c => c.id === currentChatId);
-  const messages = currentChat?.messages || [];
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  const messages: any[] = currentChat?.messages || [];
 
   useEffect(() => {
-    scrollToBottom();
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  async function handleSend() {
+    if (!input.trim() || loading) return;
+    const text = input.trim();
+    setInput("");
+    setLoading(true);
 
-    const userMessage = input.trim();
-    setInput('');
-    
     let chatId = currentChatId;
-    let updatedMessages = [...messages, { role: 'user', content: userMessage }];
-
+    let msgs = [...messages, { role: "user", content: text }];
     if (!chatId) {
-      chatId = addChat(userMessage);
+      chatId = addChat(text);
     } else {
-      updateChatMessages(chatId, updatedMessages);
+      updateChatMessages(chatId, msgs);
     }
-
-    setIsLoading(true);
 
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage }),
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
       });
-
-      const data = await response.json();
-
-      if (data.error) {
-        updatedMessages = [...updatedMessages, { role: 'bot', content: data.error }];
-      } else {
-        updatedMessages = [...updatedMessages, { 
-            role: 'bot', 
-            content: data.answer, 
-            recommendedPeople: data.recommendedPeople 
-        }];
-      }
-      updateChatMessages(chatId, updatedMessages);
-    } catch (error) {
-      updatedMessages = [...updatedMessages, { role: 'bot', content: "Sorry, I encountered an error." }];
-      updateChatMessages(chatId, updatedMessages);
-    } finally {
-      setIsLoading(false);
+      const data = await res.json();
+      msgs = [
+        ...msgs,
+        {
+          role: "bot",
+          content: data.error || data.answer || "I've analyzed the CMU community profiles. Here are the strongest matches.",
+          recommendedPeople: data.recommendedPeople,
+        },
+      ];
+    } catch {
+      msgs = [...msgs, { role: "bot", content: "Sorry, an error occurred. Please try again." }];
     }
-  };
+
+    updateChatMessages(chatId, msgs);
+    setLoading(false);
+  }
 
   return (
-    <div className="flex flex-col h-full relative">
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 pb-32">
-        {messages.length === 0 && (
-          <div className="h-full flex flex-col items-center justify-center text-center space-y-4 fade-in">
-            <h1 className="text-4xl font-bold text-gradient">How can I help you today?</h1>
-            <p className="text-text-secondary max-w-md">
-              Ask me about anyone in the CMU community. I can help you find collaborators, 
-              researchers, or just tell you more about someone's background.
-            </p>
+    <div className="chat-page">
+      {/* Scroll area */}
+      <div className="chat-scroll">
+        {messages.length === 0 ? (
+          <div className="chat-empty-state">
+            <h1>How can I help you today?</h1>
+            <p>Search the Tartan Hacks registry for 2027 using natural language.</p>
+          </div>
+        ) : (
+          messages.map((msg, i) => (
+            <div key={i} className="chat-msg-row fade-in">
+              {msg.role === "user" ? (
+                <img src="/user_icon.png" alt="You" className="chat-avatar" />
+              ) : (
+                <div className="chat-ai-icon"><StarIcon /></div>
+              )}
+              <div className="chat-msg-body">
+                {msg.role === "user"
+                  ? <p className="chat-msg-text">{msg.content}</p>
+                  : <MarkdownText text={msg.content} />
+                }
+                {msg.recommendedPeople?.length > 0 && (
+                  <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 16 }}>
+                    {msg.recommendedPeople.map((p: any, j: number) => (
+                      <ProfileCard key={j} person={p} variant="chat" />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+        {loading && (
+          <div className="chat-msg-row fade-in">
+            <div className="chat-ai-icon"><StarIcon /></div>
+            <div className="chat-msg-body">
+              <p className="chat-msg-text" style={{ color: "#9ca3af" }}>Searching the CMU network…</p>
+            </div>
           </div>
         )}
-
-        {messages.map((msg: any, i: number) => (
-          <div key={i} className={`flex gap-4 fade-in ${msg.role === 'user' ? 'justify-end' : ''}`}>
-            {msg.role === 'bot' && (
-              <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-                <Bot size={18} className="text-accent" />
-              </div>
-            )}
-            
-            <div className={`flex flex-col gap-3 max-w-[80%] ${msg.role === 'user' ? 'items-end' : ''}`}>
-              <div className={`p-4 rounded-2xl ${
-                msg.role === 'user' 
-                  ? 'bg-accent text-background font-medium' 
-                  : 'bg-card-bg border border-border'
-              }`}>
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-              </div>
-
-              {msg.recommendedPeople && msg.recommendedPeople.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                  {msg.recommendedPeople.map((person: any, j: number) => (
-                    <ProfileCard key={j} person={person} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {msg.role === 'user' && (
-              <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center shrink-0">
-                <User size={18} className="text-gray-400" />
-              </div>
-            )}
-          </div>
-        ))}
-        <div ref={messagesEndRef} />
+        <div ref={bottomRef} />
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent">
-        <div className="max-w-4xl mx-auto relative">
+      {/* Input bar — no plus icon */}
+      <div className="chat-input-bar">
+        <div className="chat-input-inner">
           <input
-            type="text"
-            className="input-bar pr-12"
-            placeholder="Ask Re:collect..."
+            className="chat-input-field"
+            placeholder="Ask follow-up or explore new connections..."
             value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+            onChange={e => setInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleSend()}
           />
-          <button 
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-accent hover:text-accent-hover transition-colors"
-            onClick={handleSend}
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+          <button className="chat-send-btn" onClick={handleSend} disabled={loading}>
+            {loading ? <SpinnerIcon /> : <SendIcon />}
           </button>
         </div>
+        <p className="chat-powered-by">Powered by Re:collect Intelligence • Carnegie Mellon University</p>
       </div>
     </div>
   );

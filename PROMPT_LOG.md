@@ -42,4 +42,12 @@ Especially make sure the following:
 1. Landing page (Chat) loads correctly with new Scotty logo and user icon that renders correctly. It should have design that replicates /docs/mockups/chat_mockup.png.
 2. Go to search and check if Rion Kurihara's card is visible in the search page (as it is the only user json provided.
 
-# 
+Make more changes to the UI. 
+- Make colors used in the column on the very left use a combination of white adn the grey of the query input bar instead of the navy which is a color that is not used anywhere else in the website.
+- Make the navigation bar stretch all the way across the screen even to the top of the vertical bar on the left and above its upmost "new chat" button. The mockup does a great job of this. Reference the chat_mockup.png.
+- The scotty icon should be used to replace the red square with three white lines next to the logo.
+- Use the dark red color used on the site already for text lie "TARTANHACKS 2027" to more clearly signify if on chat or search tab.
+- Also reconsider positioning of the chat and search tab buttons across navigation bar as make the other changes. 
+
+# Other
+Help me understand the strucure of this whole repo. Clearly the UI is managed here but what about the vectorization, RAG and hidden prompts? I origianially did all that in Google Colab and pushed a copy of that notebook here but if I want to make a change where do I go?

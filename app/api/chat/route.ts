@@ -4,7 +4,7 @@ import { getGeminiResponse } from '@/lib/gemini';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
-const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
+const embeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,18 +31,39 @@ export async function POST(req: NextRequest) {
       .join('\n---\n') || '';
 
     // 3. Get Gemini response
-    const answer = await getGeminiResponse(message, context);
+    let answer = await getGeminiResponse(message, context);
 
-    // 4. Extract recommended people from metadata if any
-    const recommendedPeople = queryResponse.matches
-      ?.map((match) => ({
-        name: match.metadata?.owner,
-        section: match.metadata?.section,
-        text: match.metadata?.text
-      }))
-      .filter((person, index, self) => 
-        person.name && self.findIndex(p => p.name === person.name) === index
-      ) || [];
+    // 4. Decide whether to show cards based on the AI's tag
+    const shouldShowCards = answer.includes("[SHOW_CARDS]");
+    answer = answer.replace("[SHOW_CARDS]", "").trim();
+
+    // 5. Build unique people cards
+    let recommendedPeople: any[] = [];
+    
+    if (shouldShowCards) {
+      const peopleMap = new Map<string, { name: string; sections: string[]; texts: string[]; source: string }>();
+
+      for (const match of queryResponse.matches || []) {
+        const owner   = match.metadata?.owner as string | undefined;
+        const section = match.metadata?.section as string | undefined;
+        const text    = match.metadata?.text as string | undefined;
+        const source  = match.metadata?.source as string | undefined;
+        if (!owner) continue;
+        if (!peopleMap.has(owner)) {
+          peopleMap.set(owner, { name: owner, sections: [], texts: [], source: source || '' });
+        }
+        const entry = peopleMap.get(owner)!;
+        if (section && !entry.sections.includes(section)) entry.sections.push(section);
+        if (text)    entry.texts.push(text);
+      }
+
+      recommendedPeople = Array.from(peopleMap.values()).map(p => ({
+        name:     p.name,
+        sections: p.sections,
+        texts:    p.texts,
+        source:   p.source,
+      }));
+    }
 
     return NextResponse.json({ answer, recommendedPeople });
   } catch (error: any) {

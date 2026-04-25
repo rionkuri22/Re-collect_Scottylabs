@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
-const embeddingModel = genAI.getGenerativeModel({ model: "embedding-001" });
+const embeddingModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
 export async function GET(req: NextRequest) {
   try {

@@ -1,70 +1,78 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Search as SearchIcon, Loader2 } from 'lucide-react';
-import ProfileCard from '@/components/ProfileCard';
+import React, { useState, useEffect } from "react";
+import ProfileCard from "@/components/ProfileCard";
+
+function SpinnerIcon() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#c41230" strokeWidth="2" className="spin">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+    </svg>
+  );
+}
 
 export default function SearchPage() {
   const [people, setPeople] = useState<any[]>([]);
-  const [query, setQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const fetchPeople = async (searchTerm = '') => {
-    setIsLoading(true);
+  async function fetchPeople(q = "") {
+    setLoading(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`);
-      const data = await response.json();
-      setPeople(data);
-    } catch (error) {
-      console.error('Search error:', error);
-    } finally {
-      setIsLoading(false);
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      setPeople(Array.isArray(data) ? data : []);
+    } catch {
+      console.error("Failed to perform search.");
+      setPeople([]);
     }
-  };
+    setLoading(false);
+  }
 
-  useEffect(() => {
-    fetchPeople();
-  }, []);
+  useEffect(() => { fetchPeople(); }, []);
 
-  const handleSearch = (e: React.FormEvent) => {
+  function handleSearch(e: React.FormEvent) {
     e.preventDefault();
     fetchPeople(query);
-  };
+  }
 
   return (
-    <div className="h-full flex flex-col p-8 space-y-8 overflow-y-auto">
-      <div className="max-w-2xl w-full">
-        <h1 className="text-3xl font-bold mb-2">Community Directory</h1>
-        <p className="text-text-secondary mb-6">Semantic search across the ScottyLabs network.</p>
-        
-        <form onSubmit={handleSearch} className="relative">
+    <div className="search-page">
+      {/* Hero */}
+      <div className="search-hero">
+        <h1 className="search-hero-title">Semantic Directory</h1>
+        <p className="search-hero-sub">Discover collaborators across the Tartan Hacks community</p>
+      </div>
+
+      {/* Search box */}
+      <div className="search-box-wrap">
+        <form className="search-box" onSubmit={handleSearch}>
           <input
-            type="text"
-            className="input-bar pl-12"
-            placeholder="Search by name, major, or keyword (e.g. ML, Design)..."
+            className="search-box-input"
+            placeholder="Search by name, expertise (e.g., 'ML'), or affiliation (e.g., 'Robotics Institute')..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={e => setQuery(e.target.value)}
           />
-          <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
-          <button type="submit" className="hidden">Search</button>
+          <button type="submit" className="search-box-btn">Search</button>
         </form>
       </div>
 
-      <div className="flex-1">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Loader2 size={32} className="animate-spin text-accent" />
-          </div>
+      {/* Popular filters */}
+      <div className="search-filters">
+        <span className="search-filters-label">Popular Filters:</span>
+        <button className="search-filter-pill" onClick={() => { setQuery("School of Computer Science"); fetchPeople("School of Computer Science"); }}>School of Computer Science</button>
+        <button className="search-filter-pill" onClick={() => { setQuery("Tepper School of Business"); fetchPeople("Tepper School of Business"); }}>Tepper School of Business</button>
+        <button className="search-filter-pill" onClick={() => { setQuery("Engineering"); fetchPeople("Engineering"); }}>Engineering</button>
+      </div>
+
+      {/* Results */}
+      <div className="search-results">
+        {loading ? (
+          <div className="search-loading"><SpinnerIcon /></div>
         ) : people.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {people.map((person, i) => (
-              <ProfileCard key={i} person={person} />
-            ))}
-          </div>
+          people.map((p, i) => <ProfileCard key={i} person={p} variant="directory" />)
         ) : (
-          <div className="text-center py-20 bg-card-bg rounded-3xl border border-dashed border-border">
-            <p className="text-text-secondary">No one found matching your query.</p>
-          </div>
+          <div className="search-empty">No one found matching your query.</div>
         )}
       </div>
     </div>
