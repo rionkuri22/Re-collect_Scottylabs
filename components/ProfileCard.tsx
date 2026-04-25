@@ -110,6 +110,11 @@ export default function ProfileCard({ person, variant = "chat" }: ProfileCardPro
   const sections: string[] = person.sections || [];
   const texts: string[]    = person.texts || (person.text ? [person.text] : []);
   const source: string     = person.source || "";
+  
+  // Real URLs from data
+  const liUrl = person.linkedin_url;
+  const ghUrl = person.github_url;
+
   const { hasLinkedIn, hasGithub, hasResume } = detectSources(sections, source);
 
   const sectionLabel = formatSection(sections);
@@ -122,20 +127,20 @@ export default function ProfileCard({ person, variant = "chat" }: ProfileCardPro
 
   /* ── Directory card ──────────────────────────────── */
   if (variant === "directory") {
-    const desc = texts[0]?.replace(/^[^:]+:\s*/, "").trim().slice(0, 180) || "";
+    const desc = person.summary || texts[0]?.replace(/^[^:]+:\s*/, "").trim().slice(0, 180) || "";
     return (
       <div className="dir-card fade-in">
         <img src="/user_icon.png" alt={name} className="dir-card-img" />
         <div className="dir-card-body">
           <h3 className="dir-card-name">{name}</h3>
           <div className="dir-card-tags">
-            <span className="dir-tag-role">{sectionLabel}</span>
+            <span className="dir-tag-role">{person.subtitle || sectionLabel}</span>
           </div>
           {desc && <p className="dir-card-desc">{desc}</p>}
           <div className="dir-card-footer">
             <div className="dir-card-icons">
-              {hasLinkedIn && <a href="#" onClick={e => e.preventDefault()} title="LinkedIn"><LinkedInIcon /></a>}
-              {hasGithub   && <a href="#" onClick={e => e.preventDefault()} title="GitHub"><GithubIcon /></a>}
+              {hasLinkedIn && <a href={liUrl || "#"} target={liUrl ? "_blank" : undefined} rel="noopener noreferrer" title="LinkedIn"><LinkedInIcon /></a>}
+              {hasGithub   && <a href={ghUrl || "#"} target={ghUrl ? "_blank" : undefined} rel="noopener noreferrer" title="GitHub"><GithubIcon /></a>}
               {hasResume   && <a href="#" onClick={e => e.preventDefault()} title="Resume"><FileIcon /></a>}
             </div>
             <a href="#" className="dir-open-profile" onClick={e => e.preventDefault()}>
@@ -156,20 +161,20 @@ export default function ProfileCard({ person, variant = "chat" }: ProfileCardPro
           <div className="result-card-name-row">
             <span className="result-card-name">{name}</span>
             <div className="result-card-icons">
-              {hasLinkedIn && <a href="#" onClick={e => e.preventDefault()} title="LinkedIn"><LinkedInIcon /></a>}
-              {hasGithub   && <a href="#" onClick={e => e.preventDefault()} title="GitHub"><GithubIcon /></a>}
+              {hasLinkedIn && <a href={liUrl || "#"} target={liUrl ? "_blank" : undefined} rel="noopener noreferrer" title="LinkedIn"><LinkedInIcon /></a>}
+              {hasGithub   && <a href={ghUrl || "#"} target={ghUrl ? "_blank" : undefined} rel="noopener noreferrer" title="GitHub"><GithubIcon /></a>}
               {hasResume   && <a href="#" onClick={e => e.preventDefault()} title="Resume"><FileIcon /></a>}
             </div>
           </div>
-          <p className="result-card-role">{sectionLabel}</p>
+          <p className="result-card-role">{person.subtitle || sectionLabel}</p>
         </div>
       </div>
 
-      {/* Profile summary — real data from Pinecone chunks */}
-      {summaryText && (
+      {/* Profile summary — prioritized manual summary */}
+      {(person.summary || summaryText) && (
         <div style={{ margin: "12px 0", padding: "0 2px" }}>
-          <p className="result-card-section-label">Relevant Background</p>
-          <p className="result-card-section-text">{summaryText}</p>
+          <p className="result-card-section-label">{person.summary ? "Summary" : "Relevant Background"}</p>
+          <p className="result-card-section-text">{person.summary || summaryText}</p>
         </div>
       )}
 

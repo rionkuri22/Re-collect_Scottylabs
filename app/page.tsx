@@ -131,7 +131,7 @@ export default function ChatPage() {
         {messages.length === 0 ? (
           <div className="chat-empty-state">
             <h1>How can I help you today?</h1>
-            <p>Search the Tartan Hacks registry for 2027 using natural language.</p>
+            <p>Search the TartanHacks registry using natural language.</p>
           </div>
         ) : (
           messages.map((msg, i) => (

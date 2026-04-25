@@ -3,7 +3,7 @@ Experience signing up to hackathons solo, making desparete discord posts and som
 So made product which puts power bacj in the hands of people lke myself by being able to quwey diredctory of participants and reach out tpo them directly. MVP for summer pronect which is to make it ready to actually be able to use it next year's TartanHacks.
 
 Favorite feature
-- The presonalized copy-paste ready outreach templates
+- 
 
 How to run it 
 1. Clone this repo

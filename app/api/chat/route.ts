@@ -41,27 +41,55 @@ export async function POST(req: NextRequest) {
     let recommendedPeople: any[] = [];
     
     if (shouldShowCards) {
-      const peopleMap = new Map<string, { name: string; sections: string[]; texts: string[]; source: string }>();
+      const peopleMap = new Map<string, { 
+        name: string; 
+        sections: string[]; 
+        texts: string[]; 
+        source: string;
+        subtitle?: string;
+        summary?: string;
+        linkedin_url?: string;
+        github_url?: string;
+      }>();
 
       for (const match of queryResponse.matches || []) {
-        const owner   = match.metadata?.owner as string | undefined;
-        const section = match.metadata?.section as string | undefined;
-        const text    = match.metadata?.text as string | undefined;
-        const source  = match.metadata?.source as string | undefined;
+        const owner    = match.metadata?.owner as string | undefined;
+        const section  = match.metadata?.section as string | undefined;
+        const text     = match.metadata?.text as string | undefined;
+        const source   = match.metadata?.source as string | undefined;
+        const subtitle = match.metadata?.subtitle as string | undefined;
+        const summary  = match.metadata?.summary as string | undefined;
+        const li_url   = match.metadata?.linkedin_url as string | undefined;
+        const gh_url   = match.metadata?.github_url as string | undefined;
+
         if (!owner) continue;
         if (!peopleMap.has(owner)) {
           peopleMap.set(owner, { name: owner, sections: [], texts: [], source: source || '' });
         }
         const entry = peopleMap.get(owner)!;
-        if (section && !entry.sections.includes(section)) entry.sections.push(section);
-        if (text)    entry.texts.push(text);
+        
+        // Collect URLs if they appear in any chunk metadata
+        if (li_url && li_url !== "LinkedIn Profile") entry.linkedin_url = li_url;
+        if (gh_url && gh_url !== "GitHub Profile")   entry.github_url   = gh_url;
+
+        if (source === 'card_info') {
+          if (subtitle) entry.subtitle = subtitle;
+          if (summary)  entry.summary  = summary;
+        } else {
+          if (section && !entry.sections.includes(section)) entry.sections.push(section);
+          if (text)    entry.texts.push(text);
+        }
       }
 
       recommendedPeople = Array.from(peopleMap.values()).map(p => ({
-        name:     p.name,
-        sections: p.sections,
-        texts:    p.texts,
-        source:   p.source,
+        name:         p.name,
+        sections:     p.sections,
+        texts:        p.texts,
+        source:       p.source,
+        subtitle:     p.subtitle,
+        summary:      p.summary,
+        linkedin_url: p.linkedin_url,
+        github_url:   p.github_url,
       }));
     }
 

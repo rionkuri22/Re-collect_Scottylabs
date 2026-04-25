@@ -41,7 +41,7 @@ export default function SearchPage() {
       {/* Hero */}
       <div className="search-hero">
         <h1 className="search-hero-title">Semantic Directory</h1>
-        <p className="search-hero-sub">Discover collaborators across the Tartan Hacks community</p>
+        <p className="search-hero-sub">Discover collaborators across the TartanHacks community</p>
       </div>
 
       {/* Search box */}
