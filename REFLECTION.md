@@ -1,9 +1,10 @@
 1. My process 
-- Idea I had had from before. As soon as made up mind about commiting to building it for this assingment, created Google Form for collecting data with clear permission checkboxes and shared with friends. Specificaly got: PDF resume, Linkedin URL (for me, exported all my account data), personal website/portfolio site URL, personal blog URL, devpoost accont URL, Youtube URL among other things which not using this time around.
-- Planned to use Google Collab for info extraction from pdfs (resumes and Linkedin profiles that that save as pdfs because scraping is not allowed) and agents on Antigravity to scrape data from the other sources. 
-- Tested full process first on my own data
-- Implement frontend
-- Did the same for other 5 friends. After create json.
+- This was an idea I had already been thinking about developing for a while. As soon as I decided to fully commit to building it for this assignment, I created a Google Form to collect data from my friendsand included clear permission checkboxes. I specifically collected PDF resumes, LinkedIn URLs which I used to downlod pdfs of their profiles (for my own profile, I exported all of my LinkedIn account data), personal website or portfolio URLs, personal blog URLs, Devpost account URLs, and YouTube URLs, along with a few other sources that I did not use this time around.
+- Reserched rules around scraping different platforms and tools to assist said process
+- Used Google Collab for extracting information from PDFs: resumes and LinkedIn profiles saved as PDFs. For the other sources, used Antigravity agents to scrape data directly from websites like personal portfolios, blogs, Devpost, and YouTube.
+- Tested full process first on my own data: extracting, json making, vectorizing, then chat.
+- Implemented frontend
+- Repeated for Sergio (+ plan to do for at least the 4 other friends)
 
 2. AI tools and strategies I used + why
 - Stitch to create UI mockups
@@ -14,18 +15,27 @@
 - Gemini in Colab to vectorize and build RAG pipeline
 - Antigravity to implement everthing together
 
-In general, was a big stepup. Because knew that was working with presonal data that my friends had trusted me with and would be working with engineers to actually ƒully develop this project soon, purposefully did not use full agentic development. Worked step by step and was manual where making and naming files and folders myself and made backend in Colab where no overwhelming amount of files or folders and free GPU resources.
-Definately took more than 8 hours to even get to finishing testing on Google Collab with just my own data. Took at least another 4 hours to figure out make frontend and implement with backend and another 4 hours to make jsosn for 5 other people. So total 16+ hours and hard but worth it.
+Overall, this project was a major step up for me.
+Because I was working with personal data that my friends trusted me with, and because I plan to eventually work with engineers to fully develop this project, I intentionally chose not to rely entirely on full agentic development.
+
+Instead, I worked step by step and kept many parts manual. I personally handled file creation, folder organization, and naming conventions. I also chose to build the backend inside Google Colab because it kept the environment simpler, avoided overwhelming file structures, and gave me access to free GPU resources.
+
+It definitely took much longer this way. It took more than 8 hours just to finish testing everything in Google Colab using only my own data. Then it took at least another 4 hours to build the frontend and connect it with the backend, plus another 4 hours to create JSON files for five additional people.
+
+In total, the project took well over 16 hours. It was difficult, but absolutely worth it.
 
 3. Changes from pre-113
-Did not know what RAG or backends, or deployment was.
-Was too scared to download or use any agentic AI tools. Would just copy and paste from web-based LLMs. 
-Now feel so much more confident and like have more otpions of ways to bring my many ideas to life, even if partially, before handing to engineers instead of trying to explain with words and terrible drawings. 
+Before this course, I did not know what RAG was, and I had very little understanding of backends or deployment.
+
+I was also too intimidated to download or use agentic AI tools. I mostly relied on copying and pasting prompts into browser-based LLMs and hoping for the best.
+
+Now, I feel significantly more confident and like I have more options for bringing my ideas to life, even if only partially, before handing them off to engineers. Instead of trying to explain ideas through words or terrible sketches, I can now build functional prototypes that communicate the vision much more clearly. 
 
 4. Had I had more time...
-- Make the whole process more automated so that can realistically proecess thousands of accounts for hackathon next year probably by at least implementing NLP. Right now, need to name each json myself or after getting half of the output in Colab and then the other half from Antigravity agent, need to give to Gemini to combine them. 
-- Play around with diff prompts and models for output to match exactly how I want it
-- Make synthetic data based on real CMU possible majors, clubs etc.
-- Implement chat history by storing conversation details in database and sending it with user query so that chat is aware of conversation context. 
-- System with account login where chat aware of who you are so that it gives suggestions in respect to each user.
-- Implement guardrails like limit to characters to user query or ban pasting of links in query. 
+- Make the entire pipeline far more automated so it could realistically process thousands of participant profiles for next year’s hackathon, likely by implementing stronger NLP workflows
+- Improve the current JSON generation process, since right now I still need to manually name files or combine partial outputs from Colab and Antigravity using Gemini
+- Experiment with different prompts and models so the output matches exactly the structure and tone I want
+- Create synthetic participant data based on real CMU majors, clubs, and student organizations for better testing
+- Implement chat history by storing conversation details in a database and passing that context into future queries so the assistant remembers previous conversations
+- Build an account login system so the platform understands who the user is and can personalize recommendations accordingly
+- Add stronger guardrails, such as character limits for user queries or preventing users from pasting external links directly into the chat input
